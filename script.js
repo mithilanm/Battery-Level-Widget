@@ -28,29 +28,45 @@ navigator.getBattery().then(function (battery) {
   });
   function updateLevelInfo() {
     document.querySelector("#batteryLevel").textContent =
-      "Battery level: " + battery.level * 100 + "%";
+      battery.level * 100 + "%";
     batteryIcon();
   }
 
   function batteryIcon() {
-    var image = document.getElementById("battery");
-    if (battery.level == 1) {
-      image.src = "battery_100.png";
-    } else if (battery.level <= 0.75) {
-      image.src = "battery_75.png";
-    } else if (battery.level <= 0.5) {
-      image.src = "battery_50.png";
-    } else if (battery.level <= 0.25) {
-      image.src = "battery_25.png";
-    } else if (battery.level == 0) {
-      image.src = "battery_0.png";
+    $("#battery").css("width", battery.level * 100 + "%");
+    if (battery.level > 0.5) {
+      $("#battery").css("background-color", "#55c867");
+    } else if (battery.level >= 0.25) {
+      $("#battery").css("background-color", "#e7e522");
+    } else {
+      $("#battery").css("background-color", "#e73922");
     }
   }
   battery.addEventListener("dischargingtimechange", function () {
     updateDischargingInfo();
   });
   function updateDischargingInfo() {
-    document.querySelector("#dischargingTime").textContent =
-      "Battery Discharging Time: " + battery.dischargingTime + " Seconds";
+    if (
+      battery.dischargingTime / 60 > 60 &&
+      battery.dischargingTime != Infinity
+    ) {
+      document.querySelector("#dischargingTime").textContent =
+        "Battery Discharging Time: " +
+        Math.floor(battery.dischargingTime / 3600) +
+        " hr " +
+        (
+          battery.dischargingTime / 60 -
+          Math.floor(battery.dischargingTime / 3600) * 60
+        ).toFixed() +
+        " min";
+    } else if (battery.dischargingTime == Infinity) {
+      document.querySelector("#dischargingTime").textContent =
+        "Battery Discharging Time: " + battery.dischargingTime;
+    } else {
+      document.querySelector("#dischargingTime").textContent =
+        "Battery Discharging Time: " +
+        (battery.dischargingTime / 60).toFixed() +
+        " min";
+    }
   }
 });
